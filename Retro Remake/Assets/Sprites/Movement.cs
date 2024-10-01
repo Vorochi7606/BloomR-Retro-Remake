@@ -16,48 +16,71 @@ public class Movement : MonoBehaviour
     private bool isGrounded;
     public LayerMask groundLayer;
 
+    public float knockForce;
+    public float knockCounter;
+    public float knockTotalTime;
+
+    public bool knockFromRight;
+
     // Update is called once per frame
     void Update()
     {
         isGrounded = Physics2D.BoxCast(transform.position + Vector3.down, new Vector2(1, 0.1f), 0, Vector2.one, 0, groundLayer);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetBool("isFalling", isGrounded == false && GetComponent<Rigidbody2D>().velocity.y < -2);
-        if (Input.GetKey(left))
+
+        if (knockCounter <= 0)
         {
-            GetComponent<Rigidbody2D>().velocity = new Vector2(-speed, GetComponent<Rigidbody2D>().velocity.y);
-            anim.SetBool("isMoving", true);
-            if (facingRight == true)
+            if (Input.GetKey(left))
             {
-                Flip();
+                GetComponent<Rigidbody2D>().velocity = new Vector2(-speed, GetComponent<Rigidbody2D>().velocity.y);
+                anim.SetBool("isMoving", true);
+                if (facingRight == true)
+                {
+                    Flip();
+                }
+            }
+            if (Input.GetKeyUp(left))
+            {
+                anim.SetBool("isMoving", false);
+            }
+            if (Input.GetKey(right))
+            {
+                GetComponent<Rigidbody2D>().velocity = new Vector2(speed, GetComponent<Rigidbody2D>().velocity.y);
+                anim.SetBool("isMoving", true);
+                if (facingRight == false)
+                {
+                    Flip();
+                }
+            }
+            if (Input.GetKeyUp(right))
+            {
+                anim.SetBool("isMoving", false);
+            }
+            if (isGrounded == true && Input.GetKeyDown(up))
+            {
+                GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, speedUp);
+                anim.SetBool("isJumping", true);
+                isJumping = true;
+            }
+            if (isJumping = true && GetComponent<Rigidbody2D>().velocity.y < 0)
+            {
+                anim.SetBool("isJumping", false);
+                isJumping = false;
             }
         }
-        if (Input.GetKeyUp(left))
+        else
         {
-            anim.SetBool("isMoving", false);
-        }
-        if (Input.GetKey(right))
-        {
-            GetComponent<Rigidbody2D>().velocity = new Vector2(speed, GetComponent<Rigidbody2D>().velocity.y);
-            anim.SetBool("isMoving", true);
-            if (facingRight == false)
+            if (knockFromRight == true)
             {
-                Flip();
+                GetComponent<Rigidbody2D>().velocity = new Vector2(-knockForce, knockForce);
             }
-        }
-        if (Input.GetKeyUp(right))
-        {
-            anim.SetBool("isMoving", false);
-        }
-        if (Input.GetKeyDown(up))
-        {
-            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, speedUp);
-            anim.SetBool("isJumping", true);
-            isJumping = true;
-        }
-        if (isJumping = true && GetComponent<Rigidbody2D>().velocity.y < 0)
-        {
-            anim.SetBool("isJumping", false);
-            isJumping = false;
+            if (knockFromRight == false)
+            {
+                GetComponent<Rigidbody2D>().velocity = new Vector2(knockForce, knockForce);
+            }
+
+            knockCounter -= Time.deltaTime;
         }
     }
     void Flip()
