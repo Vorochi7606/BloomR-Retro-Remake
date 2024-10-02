@@ -1,23 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class BoneThrow : MonoBehaviour
 {
-//    public Animator anim;
+    public Animator anim;
 
-//    [SerializeField] private GameObject bonePrefab;
+    [SerializeField] private GameObject bonePrefab;
 
-//    [SerializeField] private Transform arm;
+    [SerializeField] private Transform arm;
 
-//    public void Throw()
-//    {
-//        anim.SetTrigger("isAttacking");
+    private float timer;
 
-//        GameObject go = Instantiate(bonePrefab, arm.position, Quaternion.identity);
+    void Update()
+    {
+        timer += Time.deltaTime;
 
-//        Vector3 direction = new Vector3(transform.localScale.x, 0);
+        if (timer > 2)
+        {
+            timer = 0;
+            Throw();
+        }
+    }
 
-//        go.GetComponent<Projectile>().Setup(direction);
-//    }
+    public void Throw()
+    {
+        anim.SetTrigger("isAttacking");
+
+        GameObject go = Instantiate(bonePrefab, arm.position, Quaternion.identity);
+
+        Vector3 direction = new Vector3(transform.localScale.x, 0);
+
+        go.GetComponent<Projectile>().Setup(direction);
+    }
 }
